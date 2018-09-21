@@ -1,7 +1,7 @@
 package org.company
 
 import org.apache.spark.sql.DataFrame
-import org.company.session.{DataProcessor, DataReader}
+import org.company.session.SessionDataProcessor
 
 object EnrichSessionJobEntryPoint extends App {
 
@@ -11,6 +11,6 @@ object EnrichSessionJobEntryPoint extends App {
 
   def runEnrichSessionJob: DataFrame = {
     val data: DataFrame = DataReader.readData("/data.csv")
-    DataProcessor.enrichBySession(data, sessionDurationThresholdInSeconds = 299)
+    SessionDataProcessor.enrichBySession(data, sessionDurationThresholdInSeconds = 299)
   }
 }

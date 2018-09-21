@@ -5,7 +5,7 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
 
-object DataProcessor {
+object SessionDataProcessor {
   def enrichBySession(data: DataFrame, sessionDurationThresholdInSeconds: Int): DataFrame = {
     import org.company.session.AttributesNamesRegistry._
 

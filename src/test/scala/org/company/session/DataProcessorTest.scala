@@ -2,7 +2,7 @@ package org.company.session
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.Row._
-import org.company.SparkApplicationInitializer
+import org.company.{DataReader, SparkApplicationInitializer}
 import org.scalatest.{Matchers, WordSpec}
 
 class DataProcessorTest extends WordSpec with Matchers {
@@ -25,7 +25,7 @@ class DataProcessorTest extends WordSpec with Matchers {
         val rdd = sparkSession.sparkContext.makeRDD(row)
 
         val df = sparkSession.createDataFrame(rdd, DataReader.schema)
-        val result = DataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
+        val result = SessionDataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
         val sessionData = extractSessionRelatedData(result)
 
         sessionData.forall(_ == sessionData.head) shouldEqual true
@@ -49,7 +49,7 @@ class DataProcessorTest extends WordSpec with Matchers {
 
         val df = sparkSession.createDataFrame(rdd, DataReader.schema)
 
-        val result = DataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
+        val result = SessionDataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
 
         val sessionDataResult = extractSessionRelatedData(result)
         val idToData = result.groupBy(row => row.get(sessionId))
@@ -96,7 +96,7 @@ class DataProcessorTest extends WordSpec with Matchers {
 
         val df = sparkSession.createDataFrame(rdd, DataReader.schema)
 
-        val result = DataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
+        val result = SessionDataProcessor.enrichBySession(df, sessionDurationThreshold).collect()
         result.length shouldEqual 20
         result.groupBy(row => row.get(sessionId)).size shouldEqual 20
       }

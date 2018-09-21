@@ -1,8 +1,7 @@
-package org.company.session
+package org.company
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.company.SparkApplicationInitializer
 
 object DataReader {
   def readData(filePath: String): DataFrame = {
