@@ -1,8 +1,9 @@
-package org.company.session
+package org.company.programmatic.session
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.Row._
-import org.company.{DataReader, SparkApplicationInitializer}
+import org.company.programmatic.SparkApplicationInitializer
+import org.company.programmatic.reader.DataReader
 import org.scalatest.{Matchers, WordSpec}
 
 class DataProcessorTest extends WordSpec with Matchers {

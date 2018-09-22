@@ -1,4 +1,4 @@
-package org.company
+package org.company.programmatic
 
 import org.apache.spark.sql.SparkSession
 

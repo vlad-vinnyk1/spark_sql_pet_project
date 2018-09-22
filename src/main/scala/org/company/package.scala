@@ -1,6 +1,6 @@
-package org.company
+package org
 
-package object statistics {
+package object company {
 
   implicit class RichDouble(value: Double) {
     def toSec: Double = value * 60

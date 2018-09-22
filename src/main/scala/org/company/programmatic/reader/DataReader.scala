@@ -1,7 +1,9 @@
-package org.company
+package org.company.programmatic.reader
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.company.programmatic.SparkApplicationInitializer
+import org.company.programmatic.session.AttributesNamesRegistry._
 
 object DataReader {
   def readData(filePath: String): DataFrame = {
@@ -13,8 +15,6 @@ object DataReader {
       .csv(getClass.getResource(filePath).toString)
       .toDF()
   }
-
-  import org.company.session.AttributesNamesRegistry._
 
   val schema: StructType = {
     StructType(Array(
