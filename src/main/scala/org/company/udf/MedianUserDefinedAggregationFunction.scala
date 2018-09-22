@@ -7,8 +7,6 @@ import org.apache.spark.sql.types._
 
 class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction {
   override def inputSchema: StructType = StructType(Array(
-    StructField("category", StringType),
-    StructField("sessionId", StringType),
     StructField("sessionDuration", LongType)
   ))
 
@@ -29,7 +27,7 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
     buffer(0) =
       buffer.getAs[String](0) + "," +
-        input.getAs[Double](2)
+        input.getAs[Double](0)
   }
 
   override def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {

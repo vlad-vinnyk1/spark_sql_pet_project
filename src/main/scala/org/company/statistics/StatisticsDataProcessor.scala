@@ -1,8 +1,9 @@
 package org.company.statistics
 
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.ml.feature.Bucketizer
+import org.apache.spark.sql.{DataFrame, functions}
 import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.{col, lit, row_number, unix_timestamp}
+import org.apache.spark.sql.functions._
 import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {
@@ -14,6 +15,7 @@ object StatisticsDataProcessor {
       .withColumn("sessionDuration", sessionDurationCol)
       .withColumn("rn", row_number().over(window)).where(col("rn") === lit(1)).drop("rn")
       .select("category", "sessionId", "sessionDuration")
-    sessionWithMean.groupBy("category").agg(median(col("category"), col("sessionId"), col("sessionDuration")))
+    sessionWithMean.groupBy("category").agg(median(col("sessionDuration")))
   }
+
 }

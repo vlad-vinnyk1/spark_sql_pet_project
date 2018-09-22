@@ -6,7 +6,7 @@ import org.company.session.SessionDataProcessor
 object EnrichSessionJobEntryPoint extends App {
 
   override def main(args: Array[String]): Unit = {
-    runEnrichSessionJob.show()
+    runEnrichSessionJob.sort("category").show(34)
   }
 
   def runEnrichSessionJob: DataFrame = {
