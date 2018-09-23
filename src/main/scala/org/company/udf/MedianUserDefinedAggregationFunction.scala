@@ -1,4 +1,4 @@
-package org.company.programmatic.udf
+package org.company.udf
 
 import org.apache.commons.lang3.StringUtils.EMPTY
 import org.apache.spark.sql.Row

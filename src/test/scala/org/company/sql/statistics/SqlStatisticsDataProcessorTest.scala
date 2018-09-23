@@ -1,26 +1,39 @@
-package org.company.programmatic.statistics
+package org.company.sql.statistics
 
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{DataFrame, Row}
+import org.company.SparkApplicationInitializer
 import org.company.TestDataProvider._
+import org.company.programmatic.reader.DataReader
+import org.company.sql.reader.Tables
+import org.company.sql.reader.Tables.productsEnrichedBySessionTable
+import org.company.sql.session.SqlSessionDataProcessor
 import org.scalatest.{Matchers, WordSpec}
 
-class StatisticsDataProcessorTest extends WordSpec with Matchers {
-  "StatisticsDataProcessor Object" should {
+class SqlStatisticsDataProcessorTest extends WordSpec with Matchers {
+  private val sparkSession = SparkApplicationInitializer.sparkSession
 
+  "SqlStatisticsDataProcessor Object" should {
     //Median Tests
     "should calculate median when category has even number of items" in {
-      val result = StatisticsDataProcessor.calculateMedianPerCategory(getProductsDfWhereMedianCalculatedFromEvenNumbers).collect()
+      initWithSession(getProductsDfWhereMedianCalculatedFromEvenNumbers)
+
+      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().collect()
       result(0).getString(0) shouldEqual "books"
       result(0).getDouble(1) shouldEqual 25.0
     }
 
     "should calculate median when category has odd number of items" in {
-      val result = StatisticsDataProcessor.calculateMedianPerCategory(getProductsDfWhereMedianCalculatedFromOddNumbers).collect()
+      initWithSession(getProductsDfWhereMedianCalculatedFromOddNumbers)
+      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().collect()
+
       result(0).getString(0) shouldEqual "books"
       result(0).getDouble(1) shouldEqual 20.0
     }
 
     "should calculate valid median for every category" in {
-      val result = StatisticsDataProcessor.calculateMedianPerCategory(getProductsDfWithTwoCategories).collect()
+      initWithSession(getProductsDfWithTwoCategories)
+      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().collect()
 
       result(0).getString(0) shouldEqual "note books"
       result(0).getDouble(1) shouldEqual 7.5
@@ -30,7 +43,8 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
     }
 
     "should calculate median = 0 when session duration is 0" in {
-      val result = StatisticsDataProcessor.calculateMedianPerCategory(getProductsDfWhereSessionDurationIsZero).collect()
+      initWithSession(getProductsDfWhereSessionDurationIsZero)
+      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().collect()
       result(0).getString(0) shouldEqual "books"
       result(0).getDouble(1) shouldEqual 0.0
     }
@@ -38,7 +52,8 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
     //Range by time spent Tests
 
     "should evaluate to two user spent less than one minute on categories" in {
-      val result = StatisticsDataProcessor.calculateUsersByTimeSpentPerCategory(getProductsDfWhereTimeSpentLessThanOneMinute).collect()
+      initWithSession(getProductsDfWhereTimeSpentLessThanOneMinute)
+      val result = SqlStatisticsDataProcessor.calculateUsersByTimeSpentPerCategory().collect()
       result(0).getString(0) shouldEqual "books"
       result(0).getString(1) shouldEqual "user 100"
       result(0).getString(2) shouldEqual "< 1"
@@ -54,7 +69,8 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
 
 
     "should evaluate to two user spent between one minute and five minutes categories" in {
-      val result = StatisticsDataProcessor.calculateUsersByTimeSpentPerCategory(getProductsDfWhereTimeBetweenOneAndFiveMinutes).collect()
+      initWithSession(getProductsDfWhereTimeBetweenOneAndFiveMinutes)
+      val result = SqlStatisticsDataProcessor.calculateUsersByTimeSpentPerCategory().collect()
       result(0).getString(0) shouldEqual "books"
       result(0).getString(1) shouldEqual "user 100"
       result(0).getString(2) shouldEqual "1 to 5"
@@ -70,7 +86,8 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
 
 
     "should evaluate to two user spent more than five minutes category" in {
-      val result = StatisticsDataProcessor.calculateUsersByTimeSpentPerCategory(getProductsDfWhereTimeMoreThanFiveMinutes).collect()
+      initWithSession(getProductsDfWhereTimeMoreThanFiveMinutes)
+      val result = SqlStatisticsDataProcessor.calculateUsersByTimeSpentPerCategory().collect()
       result(0).getString(0) shouldEqual "books"
       result(0).getString(1) shouldEqual "user 100"
       result(0).getString(2) shouldEqual "> 5"
@@ -85,8 +102,9 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
     }
 
     "should result in top ten products per category" in {
-      val result = StatisticsDataProcessor
-        .calculateTopTenProductsPerCategory(getProductsDfWhereTwoCategoryWithMoreThanTenProducts)
+      initWithSession(getProductsDfWhereTwoCategoryWithMoreThanTenProducts)
+      val result = SqlStatisticsDataProcessor
+        .calculateTopTenProductsPerCategory()
         .collect()
         .map(row => (row.getString(0), row.getString(1)))
         .groupBy(_._1)
@@ -114,6 +132,13 @@ class StatisticsDataProcessorTest extends WordSpec with Matchers {
       result
     }
 
+    implicit def toRDD(df: DataFrame): RDD[Row] = df.rdd
   }
 
+  def initWithSession(rdd: RDD[Row]): Unit = {
+    val df = sparkSession.createDataFrame(rdd, DataReader.schema)
+    df.createOrReplaceTempView(Tables.productsTable)
+    SqlSessionDataProcessor.enrichBySession(299)
+      .createOrReplaceTempView(productsEnrichedBySessionTable)
+  }
 }

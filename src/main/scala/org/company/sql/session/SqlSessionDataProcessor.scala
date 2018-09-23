@@ -3,12 +3,11 @@ package org.company.sql.session
 import org.apache.spark.sql.DataFrame
 import org.company.SparkApplicationInitializer
 import org.company.programmatic.session.AttributesNamesRegistry._
-import org.company.sql.session.Tables._
+import org.company.sql.reader.Tables._
 
 object SqlSessionDataProcessor {
   def enrichBySession(sessionDurationThresholdInSeconds: Int): DataFrame = {
     val sparkSession = SparkApplicationInitializer.sparkSession
-    val allBaseColumns = Array(category, product, userId, eventTime, eventType).mkString(",")
     val categoryAndUserWindow = s"PARTITION BY $category, $userId ORDER BY $eventTime"
     val categoryUserAndSessionWindow = s"PARTITION BY $category, $userId, $sessionTemp"
 

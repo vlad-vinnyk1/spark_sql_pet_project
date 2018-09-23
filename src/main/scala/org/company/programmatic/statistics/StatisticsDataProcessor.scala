@@ -6,7 +6,7 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, functions}
 import org.company._
 import org.company.programmatic.session.AttributesNamesRegistry._
-import org.company.programmatic.udf.MedianUserDefinedAggregationFunction
+import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {
   private val rank = "rank"
@@ -19,7 +19,7 @@ object StatisticsDataProcessor {
       .withColumn(sessionDuration, sessionDurationCol)
       .withColumn(rank, row_number().over(window)).where(col(rank) === lit(1)).drop(rank)
       .select(category, sessionId, sessionDuration)
-    sessionWithMean.groupBy(category).agg(median(col(sessionDuration)))
+    sessionWithMean.groupBy(category).agg(median(col(sessionDuration)).as("median"))
   }
 
   def calculateUsersByTimeSpentPerCategory(enrichedBySession: DataFrame): DataFrame = {

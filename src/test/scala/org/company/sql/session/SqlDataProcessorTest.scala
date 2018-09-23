@@ -4,6 +4,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.Row._
 import org.company.SparkApplicationInitializer
 import org.company.programmatic.reader.DataReader
+import org.company.sql.reader.Tables
 import org.scalatest.{Matchers, WordSpec}
 
 class SqlDataProcessorTest extends WordSpec with Matchers {
