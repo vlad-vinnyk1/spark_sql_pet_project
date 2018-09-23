@@ -14,4 +14,6 @@ object AttributesNamesRegistry {
 
   val eventTimeInSecondsTemp = "eventTimeInSeconds"
   val sessionTemp = "session"
+
+  val sessionDuration = "sessionDuration"
 }

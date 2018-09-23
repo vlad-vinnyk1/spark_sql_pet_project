@@ -9,21 +9,23 @@ import org.company.programmatic.session.AttributesNamesRegistry._
 import org.company.programmatic.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {
+  private val rank = "rank"
+
   def calculateMedianPerCategory(enrichedBySession: DataFrame): DataFrame = {
     val median = new MedianUserDefinedAggregationFunction
-    val window = Window.partitionBy("category", "sessionId").orderBy("sessionDuration")
-    val sessionDurationCol = unix_timestamp(col("sessionEndTime")) - unix_timestamp(col("sessionStartTime"))
+    val window = Window.partitionBy(category, sessionId).orderBy(sessionDuration)
+    val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val sessionWithMean = enrichedBySession
-      .withColumn("sessionDuration", sessionDurationCol)
-      .withColumn("rn", row_number().over(window)).where(col("rn") === lit(1)).drop("rn")
-      .select("category", "sessionId", "sessionDuration")
-    sessionWithMean.groupBy("category").agg(median(col("sessionDuration")))
+      .withColumn(sessionDuration, sessionDurationCol)
+      .withColumn(rank, row_number().over(window)).where(col(rank) === lit(1)).drop(rank)
+      .select(category, sessionId, sessionDuration)
+    sessionWithMean.groupBy(category).agg(median(col(sessionDuration)))
   }
 
   def calculateUsersByTimeSpentPerCategory(enrichedBySession: DataFrame): DataFrame = {
     val categorySessionUserWindow = Window
-      .partitionBy("category", "sessionId", "userId")
-      .orderBy("sessionDuration")
+      .partitionBy(category, sessionId, userId)
+      .orderBy(sessionDuration)
 
     val splits = Array(Double.NegativeInfinity, 1.toSec, 5.toSec, Double.PositiveInfinity)
     val ranges = functions.udf { x: Double =>
@@ -34,27 +36,30 @@ object StatisticsDataProcessor {
       }
     }
 
+    val userDurationOnCategory = "userDurationOnCategory"
+    val range = "range"
     val bucketizer = new Bucketizer()
-      .setInputCol("userDurationOnCategory")
-      .setOutputCol("range")
+      .setInputCol(userDurationOnCategory)
+      .setOutputCol(range)
       .setSplits(splits)
 
-    val sessionDurationCol = unix_timestamp(col("sessionEndTime")) - unix_timestamp(col("sessionStartTime"))
+    val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val withSessionDuration = enrichedBySession
-      .withColumn("sessionDuration", sessionDurationCol)
-      .withColumn("rn", row_number().over(categorySessionUserWindow)).where(col("rn") === lit(1)).drop("rn")
-      .groupBy("category", "userId")
-      .agg(sum(col("sessionDuration")).as("userDurationOnCategory"))
+      .withColumn(sessionDuration, sessionDurationCol)
+      .withColumn(rank, row_number().over(categorySessionUserWindow)).where(col(rank) === lit(1)).drop(rank)
+      .groupBy(category, userId)
+      .agg(sum(col(sessionDuration)).as(userDurationOnCategory))
 
+    val timeSpent = "timeSpent"
     bucketizer.transform(withSessionDuration)
-      .withColumn("timeSpent", ranges(col("range")))
-      .drop("range")
-      .sort("category", "userId")
-      .drop("userDurationOnCategory")
+      .withColumn(timeSpent, ranges(col(range)))
+      .drop(range)
+      .sort(category, userId)
+      .drop(userDurationOnCategory)
   }
 
   def calculateTopTenProductsPerCategory(readData: DataFrame): DataFrame = {
-    val sessionDurationCol = unix_timestamp(col("sessionEndTime")) - unix_timestamp(col("sessionStartTime"))
+    val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val userWindow = Window.partitionBy(userId).orderBy(eventTime)
     val sessionUserWindow = Window.partitionBy(category, product, userId, sessionTemp)
     val session = Window.partitionBy(sessionId).orderBy(eventTime)
@@ -71,21 +76,21 @@ object StatisticsDataProcessor {
       .withColumn(sessionStartTime, min(col(eventTime)).over(sessionUserWindow))
       .withColumn(sessionEndTime, max(col(eventTime)).over(sessionUserWindow))
       .withColumn(sessionId, md5(concat(col(userId), col(sessionStartTime), col(sessionEndTime))))
-      .withColumn("sessionDuration", sessionDurationCol)
-      .withColumn("rn", row_number().over(session)).where(col("rn") === lit(1)).drop("rn")
+      .withColumn(sessionDuration, sessionDurationCol)
+      .withColumn(rank, row_number().over(session)).where(col(rank) === lit(1)).drop(rank)
       .drop(sessionTemp).drop(eventTimeInSecondsTemp).drop(eventTime)
 
-    val categoryProductWindow = Window.partitionBy(category).orderBy(col("sessionDuration").desc)
+    val categoryProductWindow = Window.partitionBy(category).orderBy(col(sessionDuration).desc)
 
     val sumOfDurations = withSessionDuration
       .groupBy(category, product)
-      .agg(sum("sessionDuration").as("sessionDuration"))
+      .agg(sum(sessionDuration).as(sessionDuration))
 
     sumOfDurations
-      .withColumn("rank", dense_rank().over(categoryProductWindow))
-      .where(col("rank") <= 10).drop("rank").drop("sessionDuration")
-      .sort(col(category), col("sessionDuration").desc)
+      .withColumn(rank, dense_rank().over(categoryProductWindow))
+      .where(col(rank) <= 10)
+      .drop(rank)
+      .drop(sessionDuration)
+      .sort(col(category), col(sessionDuration).desc)
   }
-
-
 }

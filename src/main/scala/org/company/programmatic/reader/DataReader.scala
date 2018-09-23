@@ -2,7 +2,7 @@ package org.company.programmatic.reader
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.company.programmatic.SparkApplicationInitializer
+import org.company.SparkApplicationInitializer
 import org.company.programmatic.session.AttributesNamesRegistry._
 
 object DataReader {
