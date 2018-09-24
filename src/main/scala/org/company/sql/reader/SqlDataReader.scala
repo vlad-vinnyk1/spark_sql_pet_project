@@ -1,7 +1,7 @@
 package org.company.sql.reader
 
 import org.company.SparkApplicationInitializer
-import org.company.programmatic.session.AttributesNamesRegistry._
+import org.company.AttributesNamesRegistry._
 import org.company.sql.reader.Tables._
 
 object SqlDataReader {

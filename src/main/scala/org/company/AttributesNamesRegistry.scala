@@ -1,4 +1,4 @@
-package org.company.programmatic.session
+package org.company
 
 object AttributesNamesRegistry {
   val sessionID = "sessionID"

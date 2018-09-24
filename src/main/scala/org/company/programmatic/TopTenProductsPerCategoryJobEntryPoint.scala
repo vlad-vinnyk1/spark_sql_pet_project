@@ -1,5 +1,6 @@
 package org.company.programmatic
 
+import org.company._
 import org.company.programmatic.reader.DataReader
 import org.company.programmatic.statistics.StatisticsDataProcessor
 
@@ -9,7 +10,7 @@ object TopTenProductsPerCategoryJobEntryPoint extends App {
   }
 
   private def calculateTopTenProducts = {
-    val readData = DataReader.readData("/data.csv")
+    val readData = DataReader.readData(dataFilePath)
     StatisticsDataProcessor.calculateTopTenProductsPerCategory(readData)
   }
 }

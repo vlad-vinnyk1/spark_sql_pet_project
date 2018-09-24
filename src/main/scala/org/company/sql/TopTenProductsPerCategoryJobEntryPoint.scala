@@ -1,5 +1,6 @@
 package org.company.sql
 
+import org.company.dataFilePath
 import org.company.sql.reader.SqlDataReader
 import org.company.sql.statistics.SqlStatisticsDataProcessor
 
@@ -9,7 +10,7 @@ object TopTenProductsPerCategoryJobEntryPoint extends App {
   }
 
   private def calculateTopTenProducts = {
-    SqlDataReader.readData("/data.csv")
+    SqlDataReader.readData(dataFilePath)
     SqlStatisticsDataProcessor.calculateTopTenProductsPerCategory()
   }
 }

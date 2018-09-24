@@ -2,7 +2,7 @@ package org.company.sql.session
 
 import org.apache.spark.sql.DataFrame
 import org.company.SparkApplicationInitializer
-import org.company.programmatic.session.AttributesNamesRegistry._
+import org.company.AttributesNamesRegistry._
 import org.company.sql.reader.Tables._
 
 object SqlSessionDataProcessor {

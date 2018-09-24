@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions._
 
 object SessionDataProcessor {
   def enrichBySession(data: DataFrame, sessionDurationThresholdInSeconds: Int): DataFrame = {
-    import org.company.programmatic.session.AttributesNamesRegistry._
+    import org.company.AttributesNamesRegistry._
     //    val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val categoryWindow = Window.partitionBy(category, userId).orderBy(eventTime)
     val categoryAndSessionWindow = Window.partitionBy(category, userId, sessionTemp)

@@ -1,18 +1,19 @@
 package org.company.programmatic
 
 import org.apache.spark.sql.DataFrame
+import org.company._
 import org.company.programmatic.reader.DataReader
 import org.company.programmatic.session.SessionDataProcessor
 import org.company.programmatic.statistics.StatisticsDataProcessor
 
 object MedianPerCategoryJobEntryPoint extends App {
   override def main(args: Array[String]): Unit = {
-    medianPerCategory.show()
+    medianPerCategory.show(100)
   }
 
   private def medianPerCategory: DataFrame = {
-    val data: DataFrame = DataReader.readData("/data.csv")
-    val enrichedBySession = SessionDataProcessor.enrichBySession(data, sessionDurationThresholdInSeconds = 299)
+    val data: DataFrame = DataReader.readData(dataFilePath)
+    val enrichedBySession = SessionDataProcessor.enrichBySession(data, sessionDurationThresholdInSeconds)
     StatisticsDataProcessor.calculateMedianPerCategory(enrichedBySession)
   }
 }

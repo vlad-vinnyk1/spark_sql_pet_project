@@ -2,6 +2,7 @@ package org.company.sql
 
 import org.company.sql.reader.SqlDataReader
 import org.company.sql.session.SqlSessionDataProcessor
+import org.company._
 
 object EnrichSessionJobEntryPoint extends App {
   override def main(args: Array[String]): Unit = {
@@ -9,7 +10,7 @@ object EnrichSessionJobEntryPoint extends App {
   }
 
   private def runEnrichSessionJob = {
-    SqlDataReader.readData("/data.csv")
-    SqlSessionDataProcessor.enrichBySession(299)
+    SqlDataReader.readData(dataFilePath)
+    SqlSessionDataProcessor.enrichBySession(sessionDurationThresholdInSeconds)
   }
 }

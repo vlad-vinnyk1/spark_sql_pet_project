@@ -1,6 +1,6 @@
 package org.company.sql.reader
 
-import org.company.programmatic.session.AttributesNamesRegistry._
+import org.company.AttributesNamesRegistry._
 
 object Tables {
   val productsTable = "products_csv"
