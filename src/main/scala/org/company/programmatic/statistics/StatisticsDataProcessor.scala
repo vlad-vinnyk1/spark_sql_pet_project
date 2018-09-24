@@ -1,11 +1,9 @@
 package org.company.programmatic.statistics
 
-import org.apache.spark.ml.feature.Bucketizer
+import org.apache.spark.sql.{DataFrame, functions}
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, functions}
 import org.company.AttributesNamesRegistry._
-import org.company._
 import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {
@@ -27,21 +25,13 @@ object StatisticsDataProcessor {
       .partitionBy(category, sessionId, userId)
       .orderBy(sessionDuration)
 
-    val splits = Array(Double.NegativeInfinity, 1.toSec, 5.toSec, Double.PositiveInfinity)
-    val ranges = functions.udf { x: Double =>
-      x match {
-        case 0 => "< 1"
-        case 1 => "1 to 5"
-        case 2 => "> 5"
-      }
+    val ranges = functions.udf{ x: Double =>
+      if (x < 60) "< 1"
+      else if (x >= 60 && x <= 300) "1 to 5"
+      else "> 5"
     }
 
     val userDurationOnCategory = "userDurationOnCategory"
-    val range = "range"
-    val bucketizer = new Bucketizer()
-      .setInputCol(userDurationOnCategory)
-      .setOutputCol(range)
-      .setSplits(splits)
 
     val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val withSessionDuration = enrichedBySession
@@ -51,9 +41,8 @@ object StatisticsDataProcessor {
       .agg(sum(col(sessionDuration)).as(userDurationOnCategory))
 
     val timeSpent = "timeSpent"
-    bucketizer.transform(withSessionDuration)
-      .withColumn(timeSpent, ranges(col(range)))
-      .drop(range)
+    withSessionDuration
+      .withColumn(timeSpent, ranges(col(userDurationOnCategory)))
       .sort(category, userId)
       .drop(userDurationOnCategory)
   }
