@@ -1,10 +1,10 @@
 package org.company.programmatic
 
 import org.apache.spark.sql.DataFrame
+import org.company._
 import org.company.programmatic.reader.DataReader
 import org.company.programmatic.session.SessionDataProcessor
 import org.company.programmatic.statistics.StatisticsDataProcessor
-import org.company._
 
 object RangingTimeSpentByUserPerCategory extends App {
   override def main(args: Array[String]): Unit = {

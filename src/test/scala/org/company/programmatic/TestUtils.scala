@@ -10,12 +10,12 @@ object TestUtils {
   private val sessionDurationThreshold = 299
 
 
-  def toProductDataFrame(row: List[Row]):DataFrame = {
+  def toProductDataFrame(row: List[Row]): DataFrame = {
     val rdd = sparkSession.sparkContext.makeRDD(row)
     sparkSession.createDataFrame(rdd, DataReader.schema)
   }
 
-  def toDataFrame(row: List[Row]):DataFrame = {
+  def toDataFrame(row: List[Row]): DataFrame = {
     val productsDataFrame = TestUtils.toProductDataFrame(row)
     SessionDataProcessor.enrichBySession(productsDataFrame, sessionDurationThreshold)
   }

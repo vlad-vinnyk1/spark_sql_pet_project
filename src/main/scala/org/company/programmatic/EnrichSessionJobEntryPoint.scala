@@ -1,9 +1,9 @@
 package org.company.programmatic
 
 import org.apache.spark.sql.DataFrame
+import org.company.AttributesNamesRegistry.category
 import org.company._
 import org.company.programmatic.reader.DataReader
-import AttributesNamesRegistry.category
 import org.company.programmatic.session.SessionDataProcessor
 
 object EnrichSessionJobEntryPoint extends App {

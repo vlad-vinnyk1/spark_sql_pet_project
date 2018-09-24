@@ -2,8 +2,8 @@ package org.company.programmatic.reader
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.company.SparkApplicationInitializer
 import org.company.AttributesNamesRegistry._
+import org.company.SparkApplicationInitializer
 
 object DataReader {
   def readData(filePath: String): DataFrame = {

@@ -1,8 +1,8 @@
 package org.company.sql.statistics
 
 import org.apache.spark.sql.DataFrame
+import org.company.AttributesNamesRegistry._
 import org.company._
-import AttributesNamesRegistry._
 import org.company.sql.reader.Tables.{productsEnrichedBySessionTable, _}
 
 object SqlStatisticsDataProcessor {

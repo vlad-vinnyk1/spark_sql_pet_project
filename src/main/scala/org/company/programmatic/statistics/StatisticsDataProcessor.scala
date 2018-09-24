@@ -4,8 +4,8 @@ import org.apache.spark.ml.feature.Bucketizer
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, functions}
+import org.company.AttributesNamesRegistry._
 import org.company._
-import AttributesNamesRegistry._
 import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {

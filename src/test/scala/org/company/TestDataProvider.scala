@@ -5,6 +5,57 @@ import org.apache.spark.sql.Row.fromSeq
 import org.company.programmatic.TestUtils
 
 object TestDataProvider {
+  def getProductDfWithOneSession: DataFrame = {
+    val rows = List(
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:00:02", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:01:40", "like"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:01:50", "check status")
+    ).map(fromSeq)
+    TestUtils.toDataFrame(rows)
+  }
+
+  def getProductDfWhereSessionWithDifferentIds: DataFrame = {
+    val rows = List(
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:00:02", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:05:40", "like"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:10:50", "check status"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:15:50", "like"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:20:50", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:25:50", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:30:50", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:35:50", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:40:50", "view description"),
+      Seq("books", "Scala for Dummies", "user 100", "2018-03-01 12:45:51", "view description"),
+
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:00:02", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:05:40", "like"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:10:50", "check status"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:15:50", "like"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:20:50", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:25:50", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:30:50", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:35:50", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:40:50", "view description"),
+      Seq("mobile phones", "Scala for Dummies", "user 100", "2018-03-01 12:45:51", "view description")
+    ).map(fromSeq)
+    TestUtils.toDataFrame(rows)
+  }
+
+  def getProductDfWithTwoSessions: DataFrame = {
+    val rows = List(
+      Seq("books", "book1", "user 100", "2018-03-01 12:00:02", "view description"),
+      Seq("books", "book1", "user 100", "2018-03-01 12:01:40", "like"),
+      Seq("books", "book1", "user 100", "2018-03-01 12:01:50", "check status"),
+
+      Seq("books", "book2", "user 100", "2018-03-01 12:06:50", "like"),
+      Seq("books", "book2", "user 100", "2018-03-01 12:07:50", "view description"),
+
+      Seq("mobile phones", "book3", "user 100", "2018-03-01 12:06:50", "like"),
+      Seq("mobile phones", "book3", "user 100", "2018-03-01 12:07:50", "view description")
+    ).map(fromSeq)
+
+    TestUtils.toDataFrame(rows)
+  }
 
   def getProductsDfWhereSessionDurationIsZero: DataFrame = {
     val row = List(
