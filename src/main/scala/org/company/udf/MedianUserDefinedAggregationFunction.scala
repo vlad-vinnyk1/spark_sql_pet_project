@@ -1,9 +1,10 @@
 package org.company.udf
 
-import org.apache.commons.lang3.StringUtils.EMPTY
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types._
+
+import scala.collection.mutable
 
 class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction {
   override def inputSchema: StructType = StructType(Array(
@@ -12,7 +13,7 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
 
   override def bufferSchema: StructType = {
     StructType(Array(
-      StructField("items", StringType)
+      StructField("items", ArrayType(LongType, containsNull = false))
     ))
   }
 
@@ -21,25 +22,24 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
   override def deterministic: Boolean = true
 
   override def initialize(buffer: MutableAggregationBuffer): Unit = {
-    buffer(0) = EMPTY
+    buffer(0) = Nil
   }
 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
     buffer(0) =
-      buffer.getAs[String](0) + "," +
-        input.getAs[Double](0)
+      buffer.getAs[Seq[Long]](0) :+ input.getAs[Long](0)
   }
 
   override def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {
     buffer1(0) =
-      buffer1.getAs[String](0) +
-        buffer2.getAs[String](0)
+      buffer1.getAs[Seq[Long]](0) :+ buffer2.getAs[Seq[Long]](0)
   }
 
   override def evaluate(buffer: Row): Any = {
-    val values = buffer.getString(0).split(",")
-      .filter(str => EMPTY != str)
-      .map(str => str.toDouble)
+    val values = buffer
+      .getAs[Seq[mutable.WrappedArray[Long]]](0)
+      .toArray.flatten
+      .map(_.toDouble)
     Utils.medianCalculator(values)
   }
 
