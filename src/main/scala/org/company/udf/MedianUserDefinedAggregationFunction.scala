@@ -27,12 +27,12 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
 
   override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
     buffer(0) =
-      buffer.getAs[Seq[Long]](0) :+ input.getAs[Long](0)
+      input.getAs[Long](0) +: buffer.getAs[Seq[Long]](0)
   }
 
   override def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {
     buffer1(0) =
-      buffer1.getAs[Seq[Long]](0) :+ buffer2.getAs[Seq[Long]](0)
+      buffer2.getAs[Seq[Long]](0) +: buffer1.getAs[Seq[Long]](0)
   }
 
   override def evaluate(buffer: Row): Any = {
@@ -47,9 +47,9 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
     def medianCalculator(seq: Seq[Double]): Double = {
       val sortedSeq = seq.sortWith(_ < _)
 
-      if (seq.size % 2 == 1) sortedSeq(sortedSeq.size / 2)
+      if (sortedSeq.size % 2 == 1) sortedSeq(sortedSeq.size / 2)
       else {
-        val (up, down) = sortedSeq.splitAt(seq.size / 2)
+        val (up, down) = sortedSeq.splitAt(sortedSeq.size / 2)
         (up.last + down.head) / 2
       }
     }
