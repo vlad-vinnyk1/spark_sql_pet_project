@@ -38,7 +38,7 @@ class MedianUserDefinedAggregationFunction extends UserDefinedAggregateFunction 
   override def evaluate(buffer: Row): Any = {
     val values = buffer
       .getAs[Seq[mutable.WrappedArray[Long]]](0)
-      .toArray.flatten
+      .toVector.flatten
       .map(_.toDouble)
     Utils.medianCalculator(values)
   }

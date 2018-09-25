@@ -1,8 +1,10 @@
 package org
 
 package object company {
+  type Minutes = Double
 
-  implicit class RichDouble(value: Double) {
+
+  implicit class RichDouble(value: Minutes) {
     def toSec: Double = value * 60
   }
 
