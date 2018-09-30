@@ -1,9 +1,11 @@
 package org.company.programmatic.statistics
 
+import org.apache.spark.sql.catalyst.expressions.{AggregateWindowFunction, AttributeReference, Expression, Literal}
 import org.apache.spark.sql.{DataFrame, functions}
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
 import org.company.AttributesNamesRegistry._
+import org.company.udf.LazySessionIdEvalAggregateWindowFunction.calculateSession
 import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {
@@ -51,6 +53,10 @@ object StatisticsDataProcessor {
     val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
     val userWindow = Window.partitionBy(userId).orderBy(eventTime)
     val sessionUserWindow = Window.partitionBy(category, product, userId, sessionTemp)
+    val orderedSessionWindow = Window
+      .partitionBy(userId, sessionTemp)
+      .orderBy(sessionStartTime, sessionEndTime)
+    val md5SessionIdCalc = md5(concat(col(userId), col(sessionStartTime), col(sessionEndTime)))
     val session = Window.partitionBy(sessionId).orderBy(eventTime)
 
     val sessionCol = coalesce(
@@ -64,7 +70,7 @@ object StatisticsDataProcessor {
     val withSessionDuration = withSession
       .withColumn(sessionStartTime, min(col(eventTime)).over(sessionUserWindow))
       .withColumn(sessionEndTime, max(col(eventTime)).over(sessionUserWindow))
-      .withColumn(sessionId, md5(concat(col(userId), col(sessionStartTime), col(sessionEndTime))))
+      .withColumn(sessionId, calculateSession(md5SessionIdCalc).over(orderedSessionWindow))
       .withColumn(sessionDuration, sessionDurationCol)
       .withColumn(rank, row_number().over(session)).where(col(rank) === lit(1)).drop(rank)
       .drop(sessionTemp).drop(eventTimeInSecondsTemp).drop(eventTime)
