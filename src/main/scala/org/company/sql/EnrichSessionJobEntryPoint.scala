@@ -4,8 +4,8 @@ import org.company._
 import org.company.sql.reader.SqlDataReader
 import org.company.sql.session.SqlSessionDataProcessor
 
-object EnrichSessionJobEntryPoint extends App {
-  override def main(args: Array[String]): Unit = {
+object EnrichSessionJobEntryPoint {
+  def main(args: Array[String]): Unit = {
     runEnrichSessionJob.show(100)
   }
 

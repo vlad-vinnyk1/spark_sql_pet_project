@@ -7,8 +7,8 @@ import org.company.sql.reader.Tables._
 import org.company.sql.session.SqlSessionDataProcessor
 import org.company.sql.statistics.SqlStatisticsDataProcessor
 
-object MedianPerCategoryJobEntryPoint extends App {
-  override def main(args: Array[String]): Unit = {
+object MedianPerCategoryJobEntryPoint {
+  def main(args: Array[String]): Unit = {
     medianPerCategory.show()
   }
 

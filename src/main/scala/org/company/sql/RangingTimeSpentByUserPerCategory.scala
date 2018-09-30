@@ -6,8 +6,8 @@ import org.company.sql.reader.Tables.productsEnrichedBySessionTable
 import org.company.sql.session.SqlSessionDataProcessor
 import org.company.sql.statistics.SqlStatisticsDataProcessor
 
-object RangingTimeSpentByUserPerCategory extends App {
-  override def main(args: Array[String]): Unit = {
+object RangingTimeSpentByUserPerCategory {
+  def main(args: Array[String]): Unit = {
     SqlDataReader.readData(dataFilePath)
     SqlSessionDataProcessor.enrichBySession(sessionDurationThresholdInSeconds)
       .createOrReplaceTempView(productsEnrichedBySessionTable)

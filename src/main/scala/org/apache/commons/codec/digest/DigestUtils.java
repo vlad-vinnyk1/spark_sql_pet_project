@@ -378,7 +378,7 @@ public class DigestUtils {
      * @return MD5 digest as a hex string
      */
     public static String md5Hex(final UTF8String data) {
-        return Hex.encodeHexString(md5(data.toString()));
+        return Hex.encodeHexString(md5(data != null ? data.toString() : null));
     }
 
     /**

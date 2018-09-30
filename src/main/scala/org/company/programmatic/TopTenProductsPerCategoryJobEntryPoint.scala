@@ -4,8 +4,8 @@ import org.company._
 import org.company.programmatic.reader.DataReader
 import org.company.programmatic.statistics.StatisticsDataProcessor
 
-object TopTenProductsPerCategoryJobEntryPoint extends App {
-  override def main(args: Array[String]): Unit = {
+object TopTenProductsPerCategoryJobEntryPoint {
+  def main(args: Array[String]): Unit = {
     calculateTopTenProducts.show(100)
   }
 

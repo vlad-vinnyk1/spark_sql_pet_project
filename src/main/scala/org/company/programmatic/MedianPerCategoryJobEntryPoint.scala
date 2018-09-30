@@ -6,8 +6,8 @@ import org.company.programmatic.reader.DataReader
 import org.company.programmatic.session.SessionDataProcessor
 import org.company.programmatic.statistics.StatisticsDataProcessor
 
-object MedianPerCategoryJobEntryPoint extends App {
-  override def main(args: Array[String]): Unit = {
+object MedianPerCategoryJobEntryPoint {
+  def main(args: Array[String]): Unit = {
     medianPerCategory.show(100)
   }
 

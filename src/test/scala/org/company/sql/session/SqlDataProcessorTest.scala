@@ -1,15 +1,15 @@
 package org.company.sql.session
 
 import org.apache.spark.sql.Row
-import org.company.SparkApplicationInitializer
 import org.company.TestDataProvider.{getProductDfWhereSessionWithDifferentIds, getProductDfWithOneSession, getProductDfWithTwoSessions}
+import org.company.TestSparkApplicationInitializer
 import org.company.sql.reader.Tables
 import org.scalatest.{Matchers, WordSpec}
 
 class SqlDataProcessorTest extends WordSpec with Matchers {
 
   "DataProcessor Object" should {
-    val sparkSession = SparkApplicationInitializer.sparkSession
+    val sparkSession = TestSparkApplicationInitializer.sparkSession
 
     val sessionDurationThreshold = 299
     val sessionStart = 5

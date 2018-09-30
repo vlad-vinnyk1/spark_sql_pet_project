@@ -1,12 +1,12 @@
 package org.company.programmatic
 
 import org.apache.spark.sql.{DataFrame, Row}
-import org.company.SparkApplicationInitializer
+import org.company.TestSparkApplicationInitializer
 import org.company.programmatic.reader.DataReader
 import org.company.programmatic.session.SessionDataProcessor
 
 object TestUtils {
-  private val sparkSession = SparkApplicationInitializer.sparkSession
+  private val sparkSession = TestSparkApplicationInitializer.sparkSession
   private val sessionDurationThreshold = 299
 
 

@@ -2,8 +2,9 @@ package org.company.sql.statistics
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Row}
-import org.company.SparkApplicationInitializer
+import org.company.AttributesNamesRegistry.category
 import org.company.TestDataProvider._
+import org.company.{AttributesNamesRegistry, TestSparkApplicationInitializer}
 import org.company.programmatic.reader.DataReader
 import org.company.sql.reader.Tables
 import org.company.sql.reader.Tables.productsEnrichedBySessionTable
@@ -11,7 +12,7 @@ import org.company.sql.session.SqlSessionDataProcessor
 import org.scalatest.{Matchers, WordSpec}
 
 class SqlStatisticsDataProcessorTest extends WordSpec with Matchers {
-  private val sparkSession = SparkApplicationInitializer.sparkSession
+  private val sparkSession = TestSparkApplicationInitializer.sparkSession
 
   "SqlStatisticsDataProcessor Object" should {
     //Median Tests
@@ -33,13 +34,13 @@ class SqlStatisticsDataProcessorTest extends WordSpec with Matchers {
 
     "should calculate valid median for every category" in {
       initWithSession(getProductsDfWithTwoCategories)
-      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().collect()
+      val result = SqlStatisticsDataProcessor.calculateMedianPerCategory().sort(category).collect()
 
-      result(0).getString(0) shouldEqual "note books"
-      result(0).getDouble(1) shouldEqual 7.5
-
-      result(1).getString(0) shouldEqual "books"
-      result(1).getDouble(1) shouldEqual 20.0
+      result(0).getString(0) shouldEqual "books"
+      result(0).getDouble(1) shouldEqual 20.0
+      
+      result(1).getString(0) shouldEqual "note books"
+      result(1).getDouble(1) shouldEqual 7.5
     }
 
     "should calculate median = 0 when session duration is 0" in {

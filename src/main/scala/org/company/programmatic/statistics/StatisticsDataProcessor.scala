@@ -1,9 +1,8 @@
 package org.company.programmatic.statistics
 
-import org.apache.spark.sql.catalyst.expressions.{AggregateWindowFunction, AttributeReference, Expression, Literal}
-import org.apache.spark.sql.{DataFrame, functions}
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
+import org.apache.spark.sql.{Column, DataFrame}
 import org.company.AttributesNamesRegistry._
 import org.company.udf.LazySessionIdEvalAggregateWindowFunction.calculateSession
 import org.company.udf.MedianUserDefinedAggregationFunction
@@ -27,12 +26,14 @@ object StatisticsDataProcessor {
       .partitionBy(category, sessionId, userId)
       .orderBy(sessionDuration)
 
-    val ranges = functions.udf{ x: Double =>
-      if (x < 60) "< 1"
-      else if (x >= 60 && x <= 300) "1 to 5"
-      else "> 5"
+    def toRange(userDurationOnCategory: Column): Column = {
+      when(userDurationOnCategory < 60, lit("< 1"))
+        .otherwise(
+          when(userDurationOnCategory > 300, lit("> 5"))
+            .otherwise(lit("1 to 5"))
+        )
     }
-
+    
     val userDurationOnCategory = "userDurationOnCategory"
 
     val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
@@ -44,7 +45,7 @@ object StatisticsDataProcessor {
 
     val timeSpent = "timeSpent"
     withSessionDuration
-      .withColumn(timeSpent, ranges(col(userDurationOnCategory)))
+      .withColumn(timeSpent, toRange(col(userDurationOnCategory)))
       .sort(category, userId)
       .drop(userDurationOnCategory)
   }
