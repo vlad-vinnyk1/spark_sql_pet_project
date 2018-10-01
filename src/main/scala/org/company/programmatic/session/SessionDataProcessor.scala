@@ -14,7 +14,7 @@ object SessionDataProcessor {
     val categoryAndSessionWindow = Window.partitionBy(category, userId, sessionTemp)
     val orderedCategoryAndSessionWindow = Window
       .partitionBy(category, userId, sessionTemp)
-      .orderBy(sessionStartTime, sessionEndTime)
+      .orderBy(eventTime)
     val md5SessionIdCalc = md5(concat(col(category), col(userId), col(sessionStartTime), col(sessionEndTime)))
 
     val isLagEventTimeInSessionRangeCol = (

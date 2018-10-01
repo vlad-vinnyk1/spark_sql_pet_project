@@ -33,7 +33,7 @@ object StatisticsDataProcessor {
             .otherwise(lit("1 to 5"))
         )
     }
-    
+
     val userDurationOnCategory = "userDurationOnCategory"
 
     val sessionDurationCol = unix_timestamp(col(sessionEndTime)) - unix_timestamp(col(sessionStartTime))
@@ -56,7 +56,7 @@ object StatisticsDataProcessor {
     val sessionUserWindow = Window.partitionBy(category, product, userId, sessionTemp)
     val orderedSessionWindow = Window
       .partitionBy(userId, sessionTemp)
-      .orderBy(sessionStartTime, sessionEndTime)
+      .orderBy(eventTime)
     val md5SessionIdCalc = md5(concat(col(userId), col(sessionStartTime), col(sessionEndTime)))
     val session = Window.partitionBy(sessionId).orderBy(eventTime)
 

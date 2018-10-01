@@ -54,13 +54,14 @@ object SqlStatisticsDataProcessor {
 
   def calculateUsersByTimeSpentPerCategory(): DataFrame = {
     val userDurationOnCategory = "userDurationOnCategory"
-    val ranges = { x: Double =>
-      if (x < 60) "< 1"
-      else if (x >= 60 && x <= 300) "1 to 5"
-      else "> 5"
-    }
-    sparkSession.udf.register("ranges", ranges(_: Double): String)
 
+    val toRange = {
+      s"""
+         |CASE WHEN $userDurationOnCategory < 60 THEN '< 1'
+         |WHEN $userDurationOnCategory > 300 THEN '> 5'
+         |ELSE '1 to 5' END
+       """.stripMargin
+    }
 
     val withSessionDuration =
       s"""
@@ -72,7 +73,7 @@ object SqlStatisticsDataProcessor {
     val withRank =
       s"""
          |SELECT $category, $userId,
-         |       ranges($userDurationOnCategory) as rank, $userDurationOnCategory
+         |       $toRange as rank, $userDurationOnCategory
          |FROM ($withSessionDuration)
          |ORDER BY $category, $userId
        """.stripMargin
