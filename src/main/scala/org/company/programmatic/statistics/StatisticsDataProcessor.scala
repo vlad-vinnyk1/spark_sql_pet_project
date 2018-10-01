@@ -4,7 +4,7 @@ import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{Column, DataFrame}
 import org.company.AttributesNamesRegistry._
-import org.company.udf.LazySessionIdEvalAggregateWindowFunction.calculateSession
+import org.company.udf.EffisientSessionIdEvaluatorAggregateWindowFunction.calculateSession
 import org.company.udf.MedianUserDefinedAggregationFunction
 
 object StatisticsDataProcessor {

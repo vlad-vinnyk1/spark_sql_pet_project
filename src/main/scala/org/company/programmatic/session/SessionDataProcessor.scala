@@ -4,7 +4,7 @@ import org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.sql.functions.{md5, _}
-import org.company.udf.LazySessionIdEvalAggregateWindowFunction.calculateSession
+import org.company.udf.EffisientSessionIdEvaluatorAggregateWindowFunction.calculateSession
 
 object SessionDataProcessor {
   def enrichBySession(data: DataFrame, sessionDurationThresholdInSeconds: Int): DataFrame = {
